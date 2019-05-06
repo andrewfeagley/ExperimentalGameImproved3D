@@ -6,7 +6,9 @@ public class ManageClicks : MonoBehaviour
 {
     public Camera mainCamera;
     public GameObject wall;
+    public Renderer wallRenderer;
     private Vector2 point;
+    
 
     private bool isAlive;
     private bool justClicked;
@@ -27,15 +29,17 @@ public class ManageClicks : MonoBehaviour
 
     public void ClickSpawn()
     {
-        if (Input.GetMouseButtonDown(0) && !justClicked)
+        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        if(Physics.Raycast(ray, out hit))
         {
-            Debug.Log("Left mouse button clicked.");
-            Vector3 spawnPosition = Input.mousePosition;
-            spawnPosition.z = 9.0f;
-            var objectPosition = mainCamera.ScreenToWorldPoint(spawnPosition);
-
-            GameObject wallInstance = Instantiate(wall, objectPosition, Quaternion.identity);
-            justClicked = true;
+            if(hit.transform.name == "Floor" && Input.GetMouseButtonDown(0))
+            {
+                Vector3 spawnPosition = hit.point;
+                spawnPosition.y += (wallRenderer.bounds.size.y /4);
+                GameObject wallInstance = Instantiate(wall, spawnPosition, Quaternion.identity);
+                justClicked = true;
+            }
         }
     }
 
